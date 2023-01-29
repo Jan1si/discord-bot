@@ -27,13 +27,13 @@ const commandFiles = fs.readdirSync(commandPath).filter((file) => file.endsWith(
   try {
     for (const file of commandFiles) {
       const command = await import(`./commands/${file}`)
-         .then((module) => {
-           console.log(`[SUCCESS] модуль ${file} подключен`);
-           return module;
-         })
-         .catch((err) => {
-           console.log(`[ERROR] модуль ${file} ней найден`);
-         })
+        .then((module) => {
+          console.log(`[SUCCESS] модуль ${file} подключен`);
+          return module;
+        })
+        .catch((err) => {
+          console.log(`[ERROR] модуль ${file} ней найден`);
+        })
   
          if ('data' in command.default && 'execute' in command.default) {
             await client.commands.set(command.default.data.name, command.default.data.execute)
@@ -52,7 +52,23 @@ client.on(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`Несоответствующая команда!`);
+    return;
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({ content: "При выполнении команды произошла ошибка!", ephemeral: true });
+  }
+
+})
 
 client.login(process.env.TOKEN)
-
-// console.log(process.env.TOKEN);
