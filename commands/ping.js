@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
 
-module.exports = {
+export default  {
   data: new SlashCommandBuilder()
         .setName('ping')
-        .description('Выводит pong'),
+        .setDescription('Выводит pong'),
         async execute(interaction) {
           await interaction.reply('Pong!');
         }

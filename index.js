@@ -4,7 +4,7 @@ dotenv.config();
 import { Client, Events, Collection,  GatewayIntentBits } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 // создаём клиента и назначаем ему права
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -23,17 +23,29 @@ const commandPath = path.join(__dirname, 'commands');
 // массив всех файлов из папки commands
 const commandFiles = fs.readdirSync(commandPath).filter((file) => file.endsWith('js'));
 
-for (const file of commandFiles) {
-  // const filePath = path.join(__dirname, file);
-  console.log(file)
-  //  await import(`./commands/${file}`)
-  //     .then((module) => {
-  //       console.log(module);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //     })
-}
+(async () => {
+  try {
+    for (const file of commandFiles) {
+      const command = await import(`./commands/${file}`)
+         .then((module) => {
+           console.log(`[SUCCESS] модуль ${file} подключен`);
+           return module;
+         })
+         .catch((err) => {
+           console.log(`[ERROR] модуль ${file} ней найден`);
+         })
+  
+         if ('data' in command.default && 'execute' in command.default) {
+            await client.commands.set(command.default.data.name, command.default.data.execute)
+            console.log("OK");
+         } else {
+            console.log(`[WARNING] команда ${file} не содержит ключи "data" и "execute"`)
+         }
+     }
+  } catch (error) {
+    console.log("[ERROR] неудалось произвести подключение модулей");
+  }
+})()
 
 
 client.on(Events.ClientReady, () => {

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 
-module.exports = {
+export default  {
   data: new SlashCommandBuilder()
         .setName('server')
         .setDescription('Выводит информацию о сервере'),
