@@ -36,7 +36,7 @@ const commandFiles = fs.readdirSync(commandPath).filter((file) => file.endsWith(
         })
   
          if ('data' in command.default && 'execute' in command.default) {
-            await client.commands.set(command.default.data.name, command.default.data.execute)
+            await client.commands.set(command.default.data.name, command.default.execute)
             console.log("OK");
          } else {
             console.log(`[WARNING] команда ${file} не содержит ключи "data" и "execute"`)
@@ -52,7 +52,7 @@ client.on(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on(Events.InteractionCreate, async interaction => {
+client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   
   const command = interaction.client.commands.get(interaction.commandName);
@@ -63,6 +63,7 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   try {
+    console.log(command)
     await command.execute(interaction);
   } catch (error) {
     console.error(error);

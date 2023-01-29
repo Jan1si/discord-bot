@@ -20,6 +20,7 @@ for (const file of commandFiles) {
     });
     commands.push(command.default.data.toJSON());
     console.log(`[SUCCESS] модуль ${file} зарегестрирован!`);
+
 }
 
 
@@ -30,12 +31,11 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
     console.log(`Начинаем загрузку ${commands.length} комманд для бота`);
 
     const data = await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT, process.env.GUILD),
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
       {body: commands},
     );
 
     console.log(`Успешно загурженно ${data.length} команд дляя бота`);
-    // console.log(data);
 
   } catch (error) {
     console.error(error);
